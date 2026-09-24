@@ -19,7 +19,7 @@ describe("createBot", () => {
       link_preview_options: { is_disabled: true },
       reply_parameters: { message_id: 100 },
     });
-    expect(messages.map((m) => m.text)).toContain(payload.text);
+    expect(messages).toContain(payload.text);
   });
 
   it("replies to non-text messages too", async () => {

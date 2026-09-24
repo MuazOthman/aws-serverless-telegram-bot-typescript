@@ -2,7 +2,7 @@
 
 A simple Telegram bot implemented using TypeScript and provided as an example of implementing a serverless backend on AWS.
 
-The bot replies to **any** message with one of a list of hardcoded, richly formatted messages (bold, italic, underline, strikethrough, spoilers, code blocks, quotes, bullet points and hyperlinks).
+The bot replies to **any** message with a random "Did you know?" fact about serverless, picked from a list of hardcoded, richly formatted messages (bold, italic, inline code, emoji lists).
 
 ## Stack
 
@@ -37,19 +37,16 @@ Telegram ──POST /webhook──▶ API Gateway (HTTP API) ──▶ Lambda (g
 
 ## Editing the messages
 
-Each message in `src/messages.json` has an `id` and a list of `lines`, which are joined with newlines:
+`src/messages.json` is a plain JSON array of strings, one per message. Use `\n` for line breaks:
 
 ```json
-{
-  "id": "example",
-  "lines": [
-    "<b>Bold</b>, <i>italic</i>, <u>underline</u>, <s>strike</s>, <tg-spoiler>spoiler</tg-spoiler>",
-    "• A bullet point with a <a href=\"https://grammy.dev\">link</a>"
-  ]
-}
+[
+  "💡 <b>Did you know?</b>\nSome <i>italic</i> text, <code>inline code</code> and a <a href=\"https://grammy.dev\">link</a>.",
+  "🧩 <b>A list</b>\n• First item\n• Second item"
+]
 ```
 
-Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#html-style). Telegram has no list markup, so bullet points are plain `•` characters. Escape literal `<`, `>` and `&` as `&lt;`, `&gt;` and `&amp;`. `npm test` checks every message for unsupported or unbalanced tags and for the 4096 character limit.
+Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#html-style) (`<b>`, `<i>`, `<u>`, `<s>`, `<code>`, `<pre>`, `<a href>`, `<blockquote>`, `<tg-spoiler>`). Telegram has no list markup, so write bullets as plain characters such as `•` or `1️⃣`. Escape literal `<`, `>` and `&` as `&lt;`, `&gt;` and `&amp;`. `npm test` checks every message for unsupported or unbalanced tags and for Telegram's 4096 character limit.
 
 ## Prerequisites
 

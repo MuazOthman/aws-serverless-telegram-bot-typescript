@@ -20,24 +20,15 @@ function assertValidTelegramHtml(text: string): void {
 }
 
 describe("messages", () => {
-  it("contains several messages with unique ids", () => {
+  it("contains several unique messages", () => {
     expect(messages.length).toBeGreaterThan(1);
-    expect(new Set(messages.map((m) => m.id)).size).toBe(messages.length);
+    expect(new Set(messages).size).toBe(messages.length);
   });
 
-  it.each(messages.map((m) => [m.id, m.text] as const))("%s is valid Telegram HTML", (_id, text) => {
+  it.each(messages.map((text, i) => [i, text] as const))("message %i is valid Telegram HTML", (_i, text) => {
     expect(text.length).toBeGreaterThan(0);
     expect(text.length).toBeLessThanOrEqual(4096);
     assertValidTelegramHtml(text);
-  });
-
-  it("uses text styling, bullet points and hyperlinks", () => {
-    const all = messages.map((m) => m.text).join("\n");
-    expect(all).toMatch(/<b>/);
-    expect(all).toMatch(/<i>/);
-    expect(all).toMatch(/<u>/);
-    expect(all).toMatch(/^• /m);
-    expect(all).toMatch(/<a href="https:\/\/[^"]+">/);
   });
 });
 
