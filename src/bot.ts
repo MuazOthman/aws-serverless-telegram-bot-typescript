@@ -13,9 +13,8 @@ export function createBot(token: string, config?: BotConfig<Context>): Bot {
     }),
   );
 
-  bot.catch(({ error, ctx }) => {
-    console.error(`Error while handling update ${ctx.update.update_id}:`, error);
-  });
+  // No bot.catch(): with webhookCallback, errors propagate to the Lambda handler and fail
+  // the invocation, so Telegram retries the update instead of it being silently dropped.
 
   return bot;
 }

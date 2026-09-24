@@ -3,7 +3,11 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { botInfo, textMessageUpdate, type ApiCall } from "./helpers.js";
 
 const SECRET = "test-secret";
-const { calls } = vi.hoisted(() => ({ calls: [] as ApiCall[] }));
+const { calls, apiFailure } = vi.hoisted(() => ({
+  calls: [] as ApiCall[],
+  // When set, the next Bot API call fails with this Telegram error response.
+  apiFailure: { next: undefined as { error_code: number; description: string } | undefined },
+}));
 
 // Use the real bot, but with static bot info and all Bot API calls intercepted.
 vi.mock("../src/bot.js", async (importOriginal) => {
@@ -13,7 +17,9 @@ vi.mock("../src/bot.js", async (importOriginal) => {
       const bot = original.createBot(token, { botInfo });
       bot.api.config.use(async (_prev, method, payload) => {
         calls.push({ method, payload: payload as Record<string, unknown> });
-        return { ok: true, result: true } as never;
+        const failure = apiFailure.next;
+        apiFailure.next = undefined;
+        return (failure ? { ok: false, ...failure } : { ok: true, result: true }) as never;
       });
       return bot;
     },
@@ -78,5 +84,13 @@ describe("handler", () => {
   it("rejects malformed JSON with 400", async () => {
     const res = await handler(event("{not json"), context);
     expect(res.statusCode).toBe(400);
+  });
+
+  it("fails the invocation when the reply cannot be sent, so Telegram retries the update", async () => {
+    apiFailure.next = { error_code: 429, description: "Too Many Requests: retry after 5" };
+
+    await expect(handler(event(JSON.stringify(textMessageUpdate("hi", 13))), context)).rejects.toThrow(
+      /Too Many Requests/,
+    );
   });
 });
