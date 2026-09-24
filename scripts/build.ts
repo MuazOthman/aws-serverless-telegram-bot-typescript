@@ -4,10 +4,11 @@
  * Usage: pnpm build
  */
 import { rmSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 const root = new URL("..", import.meta.url);
-const path = (relative: string) => new URL(relative, root).pathname;
+const path = (relative: string) => fileURLToPath(new URL(relative, root));
 
 rmSync(path("dist"), { recursive: true, force: true });
 
