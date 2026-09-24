@@ -10,8 +10,8 @@ The bot replies to **any** message with a random "Did you know?" fact about serv
 - **[grammY](https://grammy.dev)** – Telegram Bot API framework
 - **AWS Lambda** (`nodejs24.x`, arm64) – runs the bot
 - **Amazon API Gateway (HTTP API)** – receives Telegram webhook calls on `POST /webhook`
-- **AWS SAM** – infrastructure as code, bundling (via esbuild) and deployment
-- **Vitest** for tests
+- **AWS SAM** – infrastructure as code and deployment
+- **pnpm** for package management, **esbuild** for bundling, **Vitest** for tests
 
 ## How it works
 
@@ -46,21 +46,21 @@ Telegram ──POST /webhook──▶ API Gateway (HTTP API) ──▶ Lambda (g
 ]
 ```
 
-Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#html-style) (`<b>`, `<i>`, `<u>`, `<s>`, `<code>`, `<pre>`, `<a href>`, `<blockquote>`, `<tg-spoiler>`). Telegram has no list markup, so write bullets as plain characters such as `•` or `1️⃣`. Escape literal `<`, `>` and `&` as `&lt;`, `&gt;` and `&amp;`. `npm test` checks every message for unsupported or unbalanced tags and for Telegram's 4096 character limit.
+Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#html-style) (`<b>`, `<i>`, `<u>`, `<s>`, `<code>`, `<pre>`, `<a href>`, `<blockquote>`, `<tg-spoiler>`). Telegram has no list markup, so write bullets as plain characters such as `•` or `1️⃣`. Escape literal `<`, `>` and `&` as `&lt;`, `&gt;` and `&amp;`. `pnpm test` checks every message for unsupported or unbalanced tags and for Telegram's 4096 character limit.
 
 ## Prerequisites
 
-- Node.js 24+
+- Node.js 24+ and [pnpm](https://pnpm.io/installation) (the version is pinned in `package.json`; `corepack enable` picks it up)
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) and AWS credentials
 - A bot token from [@BotFather](https://t.me/BotFather)
 
 ## Development
 
 ```bash
-npm install
-npm run typecheck
-npm test
-npm run build   # sam build: bundles src/handler.ts with esbuild into .aws-sam/build
+pnpm install
+pnpm typecheck
+pnpm test
+pnpm build   # bundles src/handler.ts with esbuild into dist/handler.mjs
 ```
 
 ## Deployment
@@ -70,27 +70,27 @@ npm run build   # sam build: bundles src/handler.ts with esbuild into .aws-sam/b
    - `WebhookSecret` – any random string of 1–256 characters from `A-Z`, `a-z`, `0-9`, `_` and `-` (for example `openssl rand -hex 32`)
 
    ```bash
-   npm run build   # or `sam build` if esbuild is installed globally
+   pnpm build
    sam deploy --guided
    ```
 
    Your answers are saved to `samconfig.toml` (git-ignored, since it contains the secrets), so later deployments only need:
 
    ```bash
-   npm run deploy
+   pnpm run deploy   # `pnpm deploy` alone is a built-in pnpm command
    ```
 
 2. Copy the `WebhookUrl` output of the stack and register it with Telegram:
 
    ```bash
    cp .env.example .env   # then fill in BOT_TOKEN, WEBHOOK_SECRET and WEBHOOK_URL
-   npm run set-webhook
+   pnpm set-webhook
    ```
 
 3. Send your bot a message on Telegram.
 
 ### Notes
 
-- `npm run build` runs `sam build` through npm so that SAM finds the project's local `esbuild` (npm puts `node_modules/.bin` on the `PATH`). Running `sam build` directly requires esbuild to be installed globally (`npm i -g esbuild`).
+- **Don't run `sam build`.** SAM's esbuild builder installs dependencies with `npm install`, which ignores `pnpm-lock.yaml`. Instead, `pnpm build` bundles the code from the pnpm-installed dependencies into `dist/`, and `sam deploy` uploads that folder as-is. If a `.aws-sam/` folder exists from an earlier `sam build`, delete it, otherwise `sam deploy` deploys that stale build instead.
 - The bot token and webhook secret are passed to the function as environment variables. For production, consider storing them in AWS Secrets Manager or SSM Parameter Store instead.
 - To remove everything: `sam delete`.

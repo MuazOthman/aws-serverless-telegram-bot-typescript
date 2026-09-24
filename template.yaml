@@ -29,22 +29,10 @@ Resources:
 
   TelegramBotFunction:
     Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        EntryPoints:
-          - src/handler.ts
-        Format: esm
-        OutExtension:
-          - .js=.mjs
-        Target: node24
-        Minify: true
-        Sourcemap: true
-        # grammY's dependencies are CommonJS and call require(), which ESM bundles lack.
-        Banner:
-          - js=import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);
     Properties:
-      CodeUri: .
+      # Bundled by `pnpm build` (esbuild) from the pnpm-installed dependencies. `sam build` is
+      # not used because its esbuild builder runs `npm install`, ignoring pnpm-lock.yaml.
+      CodeUri: dist/
       Handler: handler.handler
       Description: Replies to every Telegram message with a random hardcoded message
       LoggingConfig:

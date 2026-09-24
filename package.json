@@ -7,11 +7,12 @@
   "engines": {
     "node": ">=24"
   },
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "sam build",
+    "build": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && esbuild src/handler.ts --bundle --minify --sourcemap --platform=node --target=node24 --format=esm --outfile=dist/handler.mjs \"--banner:js=import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\"",
     "typecheck": "tsc",
     "test": "vitest run",
-    "deploy": "sam build && sam deploy",
+    "deploy": "pnpm build && sam deploy",
     "set-webhook": "tsx --env-file-if-exists=.env scripts/set-webhook.ts"
   },
   "dependencies": {
@@ -24,5 +25,10 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

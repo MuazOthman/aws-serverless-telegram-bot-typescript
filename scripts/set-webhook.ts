@@ -1,7 +1,7 @@
 /**
  * Registers the deployed API Gateway endpoint as the bot's webhook.
  *
- * Usage: BOT_TOKEN=... WEBHOOK_SECRET=... WEBHOOK_URL=... npm run set-webhook
+ * Usage: BOT_TOKEN=... WEBHOOK_SECRET=... WEBHOOK_URL=... pnpm set-webhook
  * (the variables can also be placed in a `.env` file)
  */
 import { Api } from "grammy";
