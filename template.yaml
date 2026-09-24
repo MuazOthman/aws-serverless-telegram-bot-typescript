@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Telegram bot (TypeScript + grammY) behind an API Gateway HTTP API
+
+Parameters:
+  BotToken:
+    Type: String
+    NoEcho: true
+    Description: Telegram bot token from @BotFather
+  WebhookSecret:
+    Type: String
+    NoEcho: true
+    MinLength: 1
+    MaxLength: 256
+    AllowedPattern: "^[A-Za-z0-9_-]+$"
+    Description: Secret Telegram sends in the X-Telegram-Bot-Api-Secret-Token header (1-256 chars of A-Z, a-z, 0-9, _ and -)
+
+Globals:
+  Function:
+    Runtime: nodejs26.x
+    Architectures:
+      - arm64
+    MemorySize: 256
+    Timeout: 15
+
+Resources:
+  TelegramBotApi:
+    Type: AWS::Serverless::HttpApi
+
+  TelegramBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # Bundled by `npm run build` (esbuild). `sam build` is not used because SAM CLI
+      # does not support the nodejs26.x runtime yet; `sam deploy` uploads this folder as-is.
+      CodeUri: dist/
+      Handler: handler.handler
+      Description: Replies to every Telegram message with a random hardcoded message
+      LoggingConfig:
+        LogGroup: !Ref TelegramBotLogGroup
+      Environment:
+        Variables:
+          BOT_TOKEN: !Ref BotToken
+          WEBHOOK_SECRET: !Ref WebhookSecret
+          NODE_OPTIONS: --enable-source-maps
+      Events:
+        Webhook:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref TelegramBotApi
+            Method: POST
+            Path: /webhook
+
+  TelegramBotLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 14
+
+Outputs:
+  WebhookUrl:
+    Description: URL to register with Telegram as the bot's webhook
+    Value: !Sub "https://${TelegramBotApi}.execute-api.${AWS::Region}.amazonaws.com/webhook"
+  FunctionName:
+    Description: Name of the Lambda function
+    Value: !Ref TelegramBotFunction

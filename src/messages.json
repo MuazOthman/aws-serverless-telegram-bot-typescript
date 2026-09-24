@@ -1,0 +1,74 @@
+{
+  "$comment": "Replies are sent with Telegram's HTML parse mode. Each message is a list of lines joined with newlines. Supported tags: <b>, <i>, <u>, <s>, <code>, <pre>, <a href>, <blockquote>, <tg-spoiler>. Escape literal <, > and & as &lt; &gt; &amp;. Telegram has no list markup, so bullets are plain '•' characters.",
+  "messages": [
+    {
+      "id": "greeting",
+      "lines": [
+        "👋 <b>Hello there!</b>",
+        "",
+        "I'm a <i>tiny serverless bot</i> running on <b>AWS Lambda</b>. Here's what powers me:",
+        "• <a href=\"https://grammy.dev\">grammY</a> for talking to Telegram",
+        "• <a href=\"https://aws.amazon.com/lambda/\">AWS Lambda</a> for running code",
+        "• <a href=\"https://aws.amazon.com/api-gateway/\">API Gateway</a> for receiving webhooks",
+        "",
+        "Send me anything and I'll answer with something else!"
+      ]
+    },
+    {
+      "id": "fun-fact",
+      "lines": [
+        "💡 <b><u>Fun fact</u></b>",
+        "",
+        "Octopuses have <b>three hearts</b> and <i>blue blood</i>. Two hearts pump blood to the gills, one pumps it to the rest of the body.",
+        "",
+        "<blockquote>Read more on <a href=\"https://en.wikipedia.org/wiki/Octopus\">Wikipedia</a>.</blockquote>"
+      ]
+    },
+    {
+      "id": "productivity-tips",
+      "lines": [
+        "✅ <b>Three quick productivity tips</b>",
+        "",
+        "• <b>Single-task:</b> close the tabs you <s>might</s> won't need",
+        "• <b>Time-box:</b> try the <a href=\"https://en.wikipedia.org/wiki/Pomodoro_Technique\">Pomodoro Technique</a>",
+        "• <b>Write it down:</b> <i>your brain is for having ideas, not holding them</i>"
+      ]
+    },
+    {
+      "id": "code-snippet",
+      "lines": [
+        "🧑‍💻 <b>Here's how I reply to you</b>",
+        "",
+        "Handling a message in grammY is a one-liner:",
+        "<pre><code class=\"language-typescript\">bot.on(\"message\", (ctx) =&gt; ctx.reply(\"Hi!\"));</code></pre>",
+        "",
+        "Inline code looks like <code>npm run build</code>. See the <a href=\"https://grammy.dev/guide/\">grammY guide</a> for more."
+      ]
+    },
+    {
+      "id": "secret",
+      "lines": [
+        "🤫 <b>Want to hear a secret?</b>",
+        "",
+        "Tap to reveal: <tg-spoiler>there is no server, just <i>someone else's</i> computer.</tg-spoiler>",
+        "",
+        "Things that are <u>not</u> in this bot:",
+        "• <s>A database</s>",
+        "• <s>A server to patch</s>",
+        "• <s>An idle bill</s>"
+      ]
+    },
+    {
+      "id": "reading-list",
+      "lines": [
+        "📚 <b>Recommended reading</b>",
+        "",
+        "• <a href=\"https://core.telegram.org/bots/api#formatting-options\">Telegram formatting options</a> <i>(how this message is styled)</i>",
+        "• <a href=\"https://docs.aws.amazon.com/serverless-application-model/\">AWS SAM docs</a> <i>(how I'm deployed)</i>",
+        "• <a href=\"https://www.typescriptlang.org/docs/\">TypeScript handbook</a> <i>(what I'm written in)</i>",
+        "",
+        "<b>Tip:</b> links are <u>clickable</u> 👆"
+      ]
+    }
+  ]
+}

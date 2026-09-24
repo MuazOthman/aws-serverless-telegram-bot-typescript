@@ -1,0 +1,28 @@
+{
+  "name": "aws-serverless-telegram-bot-typescript",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple serverless Telegram bot built with TypeScript, grammY, AWS Lambda, API Gateway (HTTP API) and SAM",
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "build": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && esbuild src/handler.ts --bundle --minify --sourcemap --platform=node --target=node26 --format=esm --outfile=dist/handler.mjs \"--banner:js=import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\"",
+    "typecheck": "tsc",
+    "test": "vitest run",
+    "deploy": "npm run build && sam deploy",
+    "set-webhook": "tsx --env-file-if-exists=.env scripts/set-webhook.ts"
+  },
+  "dependencies": {
+    "grammy": "^1.46.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.163",
+    "@types/node": "^26.6.2",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  }
+}
