@@ -1,0 +1,34 @@
+{
+  "name": "aws-serverless-telegram-bot-typescript",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple serverless Telegram bot built with TypeScript, grammY, AWS Lambda, API Gateway (HTTP API) and SAM",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "typecheck": "tsc",
+    "test": "vitest run",
+    "deploy": "pnpm build && sam deploy",
+    "set-webhook": "tsx --env-file-if-exists=.env scripts/set-webhook.ts"
+  },
+  "dependencies": {
+    "grammy": "^1.46.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.163",
+    "@types/node": "^24.13.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
