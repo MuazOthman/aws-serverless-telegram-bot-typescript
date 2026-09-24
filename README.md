@@ -6,12 +6,12 @@ The bot replies to **any** message with one of a list of hardcoded, richly forma
 
 ## Stack
 
-- **Node.js 26** and **TypeScript**
+- **Node.js 24** and **TypeScript**
 - **[grammY](https://grammy.dev)** – Telegram Bot API framework
-- **AWS Lambda** (`nodejs26.x`, arm64) – runs the bot
+- **AWS Lambda** (`nodejs24.x`, arm64) – runs the bot
 - **Amazon API Gateway (HTTP API)** – receives Telegram webhook calls on `POST /webhook`
-- **AWS SAM** – infrastructure as code and deployment
-- **esbuild** for bundling, **Vitest** for tests
+- **AWS SAM** – infrastructure as code, bundling (via esbuild) and deployment
+- **Vitest** for tests
 
 ## How it works
 
@@ -53,7 +53,7 @@ Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#htm
 
 ## Prerequisites
 
-- Node.js 26+
+- Node.js 24+
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) and AWS credentials
 - A bot token from [@BotFather](https://t.me/BotFather)
 
@@ -63,7 +63,7 @@ Messages use Telegram's [HTML formatting](https://core.telegram.org/bots/api#htm
 npm install
 npm run typecheck
 npm test
-npm run build   # bundles src/handler.ts into dist/handler.mjs
+npm run build   # sam build: bundles src/handler.ts with esbuild into .aws-sam/build
 ```
 
 ## Deployment
@@ -73,7 +73,7 @@ npm run build   # bundles src/handler.ts into dist/handler.mjs
    - `WebhookSecret` – any random string of 1–256 characters from `A-Z`, `a-z`, `0-9`, `_` and `-` (for example `openssl rand -hex 32`)
 
    ```bash
-   npm run build
+   npm run build   # or `sam build` if esbuild is installed globally
    sam deploy --guided
    ```
 
@@ -94,6 +94,6 @@ npm run build   # bundles src/handler.ts into dist/handler.mjs
 
 ### Notes
 
-- **`sam build` is not used.** At the time of writing, the `nodejs26.x` Lambda runtime is in [public preview](https://aws.amazon.com/blogs/compute/introducing-public-preview-runtimes-on-aws-lambda-starting-with-node-js-26-and-python-3-15/) and SAM CLI's build step rejects it (`'nodejs26.x' runtime is not supported`). The code is bundled with esbuild instead and `sam deploy` uploads `dist/` directly. Likewise, `sam validate --lint`/`cfn-lint` flag `nodejs26.x` as an unknown runtime until they are updated. Preview runtimes are not covered by the Lambda SLA; switch `Runtime` in `template.yaml` to `nodejs24.x` if you need a GA runtime today.
+- `npm run build` runs `sam build` through npm so that SAM finds the project's local `esbuild` (npm puts `node_modules/.bin` on the `PATH`). Running `sam build` directly requires esbuild to be installed globally (`npm i -g esbuild`).
 - The bot token and webhook secret are passed to the function as environment variables. For production, consider storing them in AWS Secrets Manager or SSM Parameter Store instead.
 - To remove everything: `sam delete`.
